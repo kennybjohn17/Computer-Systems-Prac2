@@ -14,26 +14,29 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-        // Manipulate x and y inputs based on control bits
-        Mux16(a=x, b=false, sel=zx, out=xz);
-        Not16(in=xz, out=nx1);
-        Mux16(a=y, b=false, sel=zy, out=yz);
-        Not16(in=yz, out=ny1);
+    // Zero x input if zx == 1
+    Mux16(a=x, b=false, sel=zx, out=xz);
 
-        // Compute the addition and bitwise AND
-        Add16(a=nx1, b=ny1, out=addOut);
-        And16(a=xz, b=yz, out=andOut);
-        Mux16(a=andOut, b=addOut, sel=f, out=fOut);
+    // Negate x input if nx == 1
+    Not16(in=xz, out=nxOut);
 
-        // Calculate out based on the NOT control bit
-        Not16(in=fOut, out=notOut);
+    // Zero y input if zy == 1
+    Mux16(a=y, b=false, sel=zy, out=yz);
 
-        // Set out based on the NOT output control bit
-        Mux16(a=fOut, b=notOut, sel=no, out=out);
+    // Negate y input if ny == 1
+    Not16(in=yz, out=nyOut);
 
-        // Calculate zero flag (zr)
-        Or16Way(in=out, out=zr);
+    // Perform addition or bitwise AND based on f
+    Mux16(a=nxOut, b=xz, sel=f, out=selX);
+    Mux16(a=nyOut, b=yz, sel=f, out=selY);
+    Add16(a=selX, b=selY, out=addOut);
+    And16(a=selX, b=selY, out=andOut);
+    Mux16(a=addOut, b=andOut, sel=f, out=out);
 
-        // Calculate negative flag (ng)
-        Not(in=out[15], out=ng);
+    // Negate output if no == 1
+    Not16(in=out, out=noOut);
+
+    // Calculate zero and negative flags using Or8Way
+    Or8Way(in=noOut, out=ng);
+    Or8Way(in=out, out=zr);
 }
