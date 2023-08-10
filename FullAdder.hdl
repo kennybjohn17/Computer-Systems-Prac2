@@ -3,7 +3,6 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/02/FullAdder.hdl
 
-
 /**
  * Computes the sum of three bits.
  */
