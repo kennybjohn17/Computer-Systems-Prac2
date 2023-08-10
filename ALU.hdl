@@ -29,7 +29,7 @@ CHIP ALU {
     // Perform addition or bitwise AND based on f
     Mux16(a=nxOut, b=xz, sel=f, out=selX);
     Mux16(a=nyOut, b=yz, sel=f, out=selY);
-    Add16(a=selX, b=selY, out=addOut);
+    Add16(a=selX, b=selY, out=addOut, over=over);
     And16(a=selX, b=selY, out=andOut);
     Mux16(a=addOut, b=andOut, sel=f, out=out);
 
