@@ -3,6 +3,7 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/02/FullAdder.hdl
 
+
 /**
  * Computes the sum of three bits.
  */
@@ -13,7 +14,7 @@ CHIP FullAdder {
         carry;   // Left bit of a + b + c
 
     PARTS:
-    HalfAdder(a=a2,b=a1,sum=l1,carry=h1);
-    HalfAdder(a=c, b=l1, sum=h2, carry=l2);
-    Or(a=h1,b=h2,out=carry);
+    HalfAdder(a=a, b=b, sum=ab_sum, carry=ab_carry);
+    HalfAdder(a=ab_sum, b=c, sum=sum, carry=ab_carry2);
+    Or(a=ab_carry, b=ab_carry2, out=carry);
 }
