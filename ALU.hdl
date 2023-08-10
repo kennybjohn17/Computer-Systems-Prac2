@@ -29,14 +29,24 @@ CHIP ALU {
     // Perform addition or bitwise AND based on f
     Mux16(a=nxOut, b=xz, sel=f, out=selX);
     Mux16(a=nyOut, b=yz, sel=f, out=selY);
-    Add16(a=selX, b=selY, out=addOut, over=over);
+    Add16(a=selX, b=selY, out=addOut);
+
+    // Perform bitwise AND operation
     And16(a=selX, b=selY, out=andOut);
-    Mux16(a=addOut, b=andOut, sel=f, out=out);
+
+    // Select either addOut or andOut based on f
+    Mux16(a=andOut, b=addOut, sel=f, out=out);
 
     // Negate output if no == 1
     Not16(in=out, out=noOut);
 
-    // Calculate zero and negative flags using Or8Way
-    Or8Way(in=noOut, out=ng);
-    Or8Way(in=out, out=zr);
+    // Calculate zero and negative flags using Or8Ways
+    Or8Way(in=noOut[0..7], out=ng);
+    Or8Way(in=noOut[8..15], out=ng8);
+    Or8Way(in=out[0..7], out=zr);
+    Or8Way(in=out[8..15], out=zr8);
+
+    // Set overall zero and negative flags
+    Or(a=ng, b=ng8, out=ng);
+    Or(a=zr, b=zr8, out=zr);
 }
